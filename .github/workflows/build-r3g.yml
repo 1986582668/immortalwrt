@@ -17,7 +17,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
         with:
-          ref: master
+          ref: v25.12.1
           fetch-depth: 1
 
       - name: Install build dependencies
@@ -29,6 +29,18 @@ jobs:
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
+
+      - name: Embed domestic mirror sources into firmware
+        run: |
+          mkdir -p files/etc/opkg
+          cat > files/etc/opkg/distfeeds.conf <<'EOF'
+          src/gz immortalwrt_core https://mirrors.tuna.tsinghua.edu.cn/immortalwrt/releases/25.12.1/targets/ramips/mt7621/packages
+          src/gz immortalwrt_base https://mirrors.tuna.tsinghua.edu.cn/immortalwrt/releases/25.12.1/packages/mipsel_24kc/base
+          src/gz immortalwrt_luci https://mirrors.tuna.tsinghua.edu.cn/immortalwrt/releases/25.12.1/packages/mipsel_24kc/luci
+          src/gz immortalwrt_packages https://mirrors.tuna.tsinghua.edu.cn/immortalwrt/releases/25.12.1/packages/mipsel_24kc/packages
+          src/gz immortalwrt_routing https://mirrors.tuna.tsinghua.edu.cn/immortalwrt/releases/25.12.1/packages/mipsel_24kc/routing
+          src/gz immortalwrt_telephony https://mirrors.tuna.tsinghua.edu.cn/immortalwrt/releases/25.12.1/packages/mipsel_24kc/telephony
+          EOF
 
       - name: Configure
         run: |
